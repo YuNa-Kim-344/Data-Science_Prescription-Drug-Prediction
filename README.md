@@ -1,2 +1,69 @@
-# Data-Science_Prescription-Drug-Prediction
-Predicting medication prescriptions based on patient diagnosis information
+# 환자의 정보와 진단에 맞는 처방 약물 예측 모델 성능 비교
+
+### 개요 
+본 프로젝트는 의료 인력 부족 문제에 대응하고자,
+환자의 개인정보와 진단 정보를 기반으로 적절한 처방 약물을 예측하는 모델들의 성능을 비교하는 것을 목표로 한다.
+예측 성능을 비교하기 위해 다음과 같은 다양한 기계학습 모델을 적용하였다:
+
+- 다중 로지스틱 회귀 (Multinomial Logistic Regression)
+- LASSO를 적용한 다중 로지스틱 회귀
+- LDA (Linear Discriminant Analysis)
+- Random Forest
+- SVM (Support Vector Machine) – Linear Kernel
+- SVM – Radial Kernel
+
+### 데이터셋
+데이터셋은 MIMIC-IV을 사용한다.
+MIMIC-IV(Medical Information Mart for Intensive Care IV)는 MIT의 PhysioNet에서 제공하는 의료 데이터베이스로, 중환자실(ICU) 데이터를 기반으로 설계된 최신 데이터셋이다.
+
+- 데이터 개수 : 행 49125 개, 열 11개
+- Variables
+    - V1 : 환자 정보 아이디 (subject_id)
+    - V2 : 환자의 성별 
+    - V3 : 환자의 나이
+    - V4 : BMI
+    - V5 : 혈압
+    - V6 : 키
+    - V7 : 체중
+    - V8 : 환자의 입원 정보 아이디 
+    - V9 : 환자의 진단명
+    - V10 : 환자의 처치 정보
+    - V11 : 처방된 약물명
+
+### 모델 훈련 및 정확도 비교
+
+환자의 개인정보, 진단, 처치 등의 총 8개의 독립변수(X) 로 종속변수(Y)인 환자 진단에 알맞는 처방 약물 예측한다.
+데이터셋이 분류 형식이므로 다음과 같은 모델을 적용한다.
+
+- 다중 클래스 로지스틱 회귀 (Multinomial Logistic Regression)
+- 다중 클래스 로지스틱 회귀 (LASSO 적용)
+- 선형 판별 분석 (LDA)
+- 랜덤 포레스트 (Random Forest)
+- 서포트 벡터 머신 (SVM)
+
+[ 각 내용의 자세한 좀 더 자세한 내용은 PPT에 첨부되어 있습니다. ]
+
+| 모델                           | 정확도  |
+|:------------------------------|:--------:|
+| 다중 로지스틱 회귀            | 3.9%     |
+| LASSO 적용 다중 로지스틱 회귀 | 18.3%    |
+| LDA                            | 20.6%    |
+| ~~Random Forest (ntree=700 / mtry=3)~~ | ~~72.8%~~ |
+| SVM (Linear, cost=1)          | 20.6%    |
+| **SVM (Radial, cost=1 / gamma=1)** | **41%**     |
+
+
+### 결론
+
+| 모델                      | 결론 요약 |
+|---------------------------|-----------|
+| **다중 로지스틱 회귀**     | 데이터가 선형적으로 분리되지 않아 복잡한 패턴을 제대로 학습하지 못함 |
+| **다중 로지스틱 회귀 LASSO** | 데이터의 노이즈를 줄이고 중요한 변수만 선택하여 성능 개선 → 그러나 비선형 경계에서 복잡한 패턴은 학습하지 못함 |
+| **LDA**                   | 데이터의 정규성을 활용하여 다중 로지스틱 회귀보다 성능 개선 → 비선형 경계를 처리하지 못해 SVM보다 낮은 성능 |
+| **Random Forest**         | 정확도는 향상되었으나, 다른 클래스 간 비중 불균형으로 모델 해석 가능성과 신뢰성이 떨어짐 |
+| **SVM (Linear Kernel)**   | 마진 최대화를 통해 성능 향상 → 다중 로지스틱 회귀보다 좋았으나, LDA와 유사한 수준 |
+| **SVM (Radial Kernel)**   | 데이터의 비선형 구조를 잘 캡처하여 가장 높은 정확도 달성 |
+
+데이터의 비선형 특성을 고려하지 않은 선형 모델들은 한계가 존재하였다.
+SVM(Radial Kernal)을 통해 비선형 패턴을 효과적으로 학습하면서 비교 모델들 중 41%로 가장 우수한 성능을 보였다.
+
